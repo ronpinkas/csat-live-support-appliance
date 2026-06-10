@@ -1,0 +1,57 @@
+# InstantAIguru appliance — CSAT (multi-tenant) + Live Support behind Caddy,
+# on one host, with automatic HTTPS for both subdomains.
+#
+#   1. cp .env.example .env   and fill it in
+#   2. point DNS A records for $CSAT_HOST and $LS_HOST at this host
+#   3. docker compose up -d
+#
+# Only ports 80/443 are exposed; WebRTC media is peer-to-peer / Cloudflare TURN,
+# so no UDP port ranges are needed. App data lives on named volumes.
+services:
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp" # HTTP/3
+    environment:
+      CSAT_HOST: ${CSAT_HOST}
+      LS_HOST: ${LS_HOST}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [csat, live-support]
+
+  csat:
+    image: ghcr.io/ronpinkas/csat:${CSAT_TAG:-latest}
+    restart: unless-stopped
+    environment:
+      CSAT_CRYPTO_SECRET: ${CSAT_CRYPTO_SECRET:?set CSAT_CRYPTO_SECRET in .env}
+      CSAT_ADMIN_INITIAL_PW: ${CSAT_ADMIN_INITIAL_PW:-}
+    volumes:
+      - ./csat/config.toml:/etc/csat/config.toml:ro
+      - csat_data:/data
+    expose: ["8080"]
+
+  live-support:
+    image: ghcr.io/anthonyicuracao/live-support:${LS_TAG:-latest}
+    restart: unless-stopped
+    environment:
+      SECURE_COOKIES: "true"
+      SITE_NAME: ${LS_SITE_NAME:-Live Support}
+      ADMIN_USERNAME: ${LS_ADMIN_USERNAME:-admin}
+      ADMIN_INITIAL_PASSWORD: ${LS_ADMIN_INITIAL_PASSWORD:-}
+      CONNECT_SECRET: ${LS_CONNECT_SECRET:-}
+      CLOUDFLARE_TURN_TOKEN_ID: ${CLOUDFLARE_TURN_TOKEN_ID:-}
+      CLOUDFLARE_API_TOKEN: ${CLOUDFLARE_API_TOKEN:-}
+    volumes:
+      - ls_data:/data
+    expose: ["8000"]
+
+volumes:
+  caddy_data: {}
+  caddy_config: {}
+  csat_data: {}
+  ls_data: {}

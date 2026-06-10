@@ -1,0 +1,10 @@
+# Automatic HTTPS for both products. Caddy fetches + renews Let's Encrypt certs
+# per hostname and proxies WebSockets transparently (Live Support's /ws). The
+# apps listen plain-HTTP on the internal compose network; only Caddy is exposed.
+{$CSAT_HOST} {
+	reverse_proxy csat:8080
+}
+
+{$LS_HOST} {
+	reverse_proxy live-support:8000
+}

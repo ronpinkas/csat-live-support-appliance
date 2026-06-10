@@ -1,0 +1,38 @@
+# CSAT configuration for the appliance: multi-tenant, behind Caddy (which
+# terminates TLS). Secrets come from the environment (see ../.env). Data — one
+# SQLite database per tenant — lives under /data (the csat_data volume).
+[site]
+name             = "CSAT"
+display_timezone = "UTC"
+
+[server]
+listen_addr     = ":8080"
+trust_proxy     = true
+# Trust X-Forwarded-* only from the internal Docker network (Caddy). The app is
+# never exposed directly; only Caddy reaches it.
+trusted_proxies = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+secure_cookies  = true
+
+[server.tls]
+mode = "off" # Caddy terminates TLS
+
+[tenancy]
+mode     = "multi"
+data_dir = "/data/tenants"
+
+[security]
+# The deployment master key — signs survey links AND tenant-provisioning tokens.
+# Set CSAT_CRYPTO_SECRET in ../.env; it is never shown to tenant admins.
+crypto_secret     = "env:CSAT_CRYPTO_SECRET"
+crypto_key_path   = "/data/crypto.key"
+session_ttl_hours = 12
+invite_ttl_hours  = 168
+
+[admin]
+username = "admin"
+# Leave CSAT_ADMIN_INITIAL_PW empty: onboard tenants via POST /provision (which
+# returns an admin invite link), not a shared password.
+initial_password = "env:CSAT_ADMIN_INITIAL_PW"
+
+[branding]
+theme_color = "#2563eb"
