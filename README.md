@@ -1,4 +1,4 @@
-# InstantAIguru Appliance
+# CSAT + Live Support Appliance
 
 One host, two products, automatic HTTPS — **CSAT** (multi-tenant survey + analytics) and
 **Live Support** (WebRTC video/voice/chat) behind **Caddy**, via `docker compose`.
