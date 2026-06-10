@@ -12,6 +12,9 @@ trust_proxy     = true
 # never exposed directly; only Caddy reaches it.
 trusted_proxies = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
 secure_cookies  = true
+# Browser origin(s) of your platform admin page, allowed to read /provision's
+# invite link cross-origin (the call is still token-gated). Edit for your host.
+cors_origins    = ["https://instantaiguru.com"]
 
 [server.tls]
 mode = "off" # Caddy terminates TLS

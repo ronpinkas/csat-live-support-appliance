@@ -1,0 +1,12 @@
+# Local-only: internal (self-signed) certs, no ACME. Reach via curl --resolve.
+{
+	local_certs
+}
+
+csat.localhost {
+	reverse_proxy csat:8080
+}
+
+ls.localhost {
+	reverse_proxy live-support:8000
+}

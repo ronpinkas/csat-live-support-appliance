@@ -1,0 +1,44 @@
+# LOCAL test launch only (not for deployment). Uses the locally-built images,
+# Caddy with internal self-signed certs (no public DNS/ACME), and publishes the
+# app ports so they can also be probed directly. Secrets come from .env.
+#   docker compose -f docker-compose.local.yml up -d
+services:
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "443:443"
+    volumes:
+      - ./Caddyfile.local:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    depends_on: [csat, live-support]
+
+  csat:
+    image: ghcr.io/ronpinkas/csat:latest
+    pull_policy: never
+    restart: unless-stopped
+    environment:
+      CSAT_CRYPTO_SECRET: ${CSAT_CRYPTO_SECRET:?set in .env}
+    volumes:
+      - ./csat/config.local.toml:/etc/csat/config.toml:ro
+      - csat_data:/data
+    ports:
+      - "8080:8080"
+
+  live-support:
+    image: ghcr.io/anthonyicuracao/live-support:latest
+    pull_policy: never
+    restart: unless-stopped
+    environment:
+      SECURE_COOKIES: "false"
+      CONNECT_SECRET: ${LS_CONNECT_SECRET:?set in .env}
+      CORS_ORIGINS: "http://localhost:8000,http://127.0.0.1:8000"
+    volumes:
+      - ls_data:/data
+    ports:
+      - "8001:8000"
+
+volumes:
+  caddy_data: {}
+  csat_data: {}
+  ls_data: {}

@@ -1,0 +1,33 @@
+# LOCAL test config only: plain-HTTP direct access (no Caddy/TLS in front), so
+# Secure cookies are OFF. Otherwise identical to ../csat/config.toml.
+[site]
+name             = "CSAT"
+display_timezone = "UTC"
+
+[server]
+listen_addr     = ":8080"
+trust_proxy     = true
+trusted_proxies = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+secure_cookies  = false
+# Local dev: allow the local user-admin page to read /provision cross-origin.
+cors_origins    = ["http://localhost:8000", "http://127.0.0.1:8000"]
+
+[server.tls]
+mode = "off"
+
+[tenancy]
+mode     = "multi"
+data_dir = "/data/tenants"
+
+[security]
+crypto_secret     = "env:CSAT_CRYPTO_SECRET"
+crypto_key_path   = "/data/crypto.key"
+session_ttl_hours = 12
+invite_ttl_hours  = 168
+
+[admin]
+username         = "admin"
+initial_password = "env:CSAT_ADMIN_INITIAL_PW"
+
+[branding]
+theme_color = "#2563eb"
