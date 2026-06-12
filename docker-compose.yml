@@ -47,6 +47,10 @@ services:
       CORS_ORIGINS: ${CORS_ORIGINS:-}
       CLOUDFLARE_TURN_TOKEN_ID: ${CLOUDFLARE_TURN_TOKEN_ID:-}
       CLOUDFLARE_API_TOKEN: ${CLOUDFLARE_API_TOKEN:-}
+      # Web Push (Phase 2). Unset → push disabled, falls back to in-tab delivery.
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:ops@instantaiguru.com}
     volumes:
       - ls_data:/data
     expose: ["8000"]
