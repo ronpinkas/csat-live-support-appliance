@@ -67,3 +67,17 @@ start; tenant data persists on the volumes.
 - `ghcr.io/anthonyicuracao/live-support` — same, from the live-support repo.
 
 Both are public, so the host needs no registry login.
+
+## Credits
+
+This appliance bundles two self-contained products, each developed and maintained in its
+own repository — the appliance itself is just the glue (Caddy config, `docker compose`,
+onboarding docs):
+
+- **CSAT** — multi-tenant survey + analytics — [github.com/ronpinkas/csat](https://github.com/ronpinkas/csat) · MIT.
+- **Live Support** — WebRTC voice / video / chat + Web Push — [github.com/anthonyicuracao/live-support](https://github.com/anthonyicuracao/live-support) · MIT.
+
+## License
+
+MIT — see [LICENSE](LICENSE). © 2026 Ron Pinkas. The bundled products are licensed
+separately in their own repositories (linked above).
