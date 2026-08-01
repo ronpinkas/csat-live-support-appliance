@@ -23,7 +23,7 @@ services:
       - ./csat/config.local.toml:/etc/csat/config.toml:ro
       - csat_data:/data
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
 
   live-support:
     image: ghcr.io/anthonyicuracao/live-support:latest
@@ -31,6 +31,11 @@ services:
     restart: unless-stopped
     environment:
       SECURE_COOKIES: "false"
+      # LOCAL ONLY. Enables /dev/sso, which mints a sign-in for any user so the
+      # admin's Live Support button works against this appliance instead of
+      # sending a platform-signed token it cannot verify. Gated on DEV_MODE
+      # *and* a loopback client; never set this on a deployed host.
+      DEV_MODE: "true"
       CONNECT_SECRET: ${LS_CONNECT_SECRET:?set in .env}
       CORS_ORIGINS: "http://localhost:8000,http://127.0.0.1:8000"
       # Web Push (Phase 2). Throwaway local keys live in .env (gitignored).
@@ -40,7 +45,7 @@ services:
     volumes:
       - ls_data:/data
     ports:
-      - "8001:8000"
+      - "127.0.0.1:8001:8000"
 
 volumes:
   caddy_data: {}
